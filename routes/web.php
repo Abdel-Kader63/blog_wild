@@ -5,22 +5,8 @@ use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChirpController;
 
-// La route-ressource => Les routes "post.*"
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
-// Route::get('/', [PostController::class, 'index']);
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/', [PostController::class, 'index'])->name('Accueil');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -31,12 +17,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/', [PostController::class, 'index'])->name('posts.index'); 
+
 Route::resource("posts", PostController::class)
-->only(['index', 'store', 'edit', 'update', 'destroy', 'show', 'create'])
+->only(['store', 'edit', 'update', 'destroy', 'show', 'create'])
     ->middleware(['auth', 'verified']);
+    Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
     
 // route pour les commentaires
 Route::resource('chirps', ChirpController::class)
-->only(['index', 'store', 'edit', 'update', 'destroy'])
+->only(['store', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
+Route::post('/posts/{post}/chirps', [ChirpController::class, 'store'])->name('chirps.store');
+
 require __DIR__.'/auth.php';

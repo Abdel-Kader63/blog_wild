@@ -1,97 +1,93 @@
 <?php
 
 namespace App\Http\Controllers;
- 
 
-use App\Models\Chirp;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Chirp;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
- 
+use Illuminate\Support\Facades\Auth;
+
 class ChirpController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-     
-     public function index(): View
-     {
-     
-        return view('chirps.index', [
-            'chirps' => Chirp::with('user')->latest()->get(),
-        ]);
-     }
- 
-     public function store(Request $request): RedirectResponse
-     {
-       
-         $validated = $request->validate([
-             'message' => 'required|string|max:255',
-         ]);
-  
-         $request->user()->chirps()->create($validated);
-  
-         return redirect(route('chirps.index'));
-     }
 
-     public function edit(Chirp $chirp): View
-     {
-         
-         $this->authorize('update', $chirp);
-  
-         return view('chirps.edit', [
-             'chirp' => $chirp,
-         ]);
-     }
+    public function index(): View
+    { {
+            $chirps = Chirp::all();
 
-   
+            return view('posts.show', ['chirps' => $chirps]);
+        }
+    }
+
     /**
-     * Show the form for creating a new resource.
+     *créer
      */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    
-    /**
-     * Display the specified resource.
-     */
-    public function show(Chirp $chirp)
+    // enregistrer et validation de commentaires 
+    public function store(Post $post, Request $request)
     {
-        //
+        
+
+            if (!Auth::check()) {
+                return redirect()->back();
+            }
+            
+            $validated = $request->validate([
+                'message' => 'required|string|max:255',
+            ]);
+    
+            $chirp = new Chirp();
+            $chirp->message = $validated['message'];
+            $chirp->user_id = auth()->id();
+            $chirp->post_id = $post->id;
+            $chirp->save();
+            return redirect()->back()->with('success', 'Commentaire add');
+       
+        
+    }
+    
+
+
+    // éditer un commentaire 
+    public function edit(Chirp $chirp): View
+    {
+        $this->authorize('update', $chirp);
+
+        return view('chirps.edit', [
+            'chirp' => $chirp,
+        ]);
     }
 
-    
-    /**
-     * Update the specified resource in storage.
-     */
+    // mettre à jour 
     public function update(Request $request, Chirp $chirp): RedirectResponse
     {
         $this->authorize('update', $chirp);
- 
+
         $validated = $request->validate([
             'message' => 'required|string|max:255',
         ]);
- 
+
         $chirp->update($validated);
- 
-        return redirect(route('chirps.index'));
+
+        return redirect(route("posts.show", $chirp->post));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Chirp $chirp): RedirectResponse
     {
         $this->authorize('delete', $chirp);
- 
+
         $chirp->delete();
- 
-        return redirect(route('chirps.index'));
+
+        return redirect()->back()->with('success', 'Chirp deleted ');
     }
- }
+}

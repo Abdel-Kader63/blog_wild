@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            // Lorsqu'un user suprime son compte, tout ce qui relier à lui sera supprimer (articles)
+            
             $table->string('title');
             $table->string('picture');
             $table->text('content');
-            
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

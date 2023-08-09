@@ -3,7 +3,7 @@
 
 {{-- Affichage des commentaires --}}
 <x-app-layout>
-    <h1 class="flex justify-center font-extrabold text-3xl m-5">Commentaires</h1>
+    {{-- <h1 class="flex justify-center font-extrabold text-3xl m-5">Commentaires</h1>
     <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
         <form method="POST" action="{{ route('chirps.store') }}">
             @csrf
@@ -59,5 +59,5 @@
                 </div>
             @endforeach
         </div>
-    </div>
+    </div> --}}
 </x-app-layout>

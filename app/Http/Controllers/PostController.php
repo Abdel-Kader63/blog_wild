@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Chirp;
 use App\Models\Post;
+use App\Models\Chirp;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -41,25 +41,20 @@ class PostController extends Controller
 
         // 2. On upload l'image dans "/storage/app/public/posts"
         $chemin_image = $request->picture->store("posts");
-
-        // 3. On enregistre les informations du Post
-        // Post::create([
-        //     "title" => $request->title,
-        //     "picture" => $chemin_image,
-        //     "content" => $request->content,
-        // ]);
-
+        
         // 4. On retourne vers tous les posts : route("posts.index")
         return redirect(route("posts.index"));
     }
 
     // Afficher un Post
-    public function show(Post $post, Chirp $chirp) {
-        return view("posts.show", compact("post"));
+    public function show(Post $post) {
+        $chirps = $post->chirps;
+        return view("posts.show", compact("post", "chirps"));
     }
 
     // Editer un Post enregistré
-    public function edit(Post $post) {
+    public function edit(Post $post) :View
+    {
         return view("posts.edit", compact("post"));
     }
 
